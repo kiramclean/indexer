@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo "Build jar..."
+
+clj -X:uberjar
+
+echo "Nativize it..."
+
+native-image --report-unsupported-elements-at-runtime \
+             --initialize-at-build-time \
+             --no-server \
+             -jar ./builds/indexer.jar \
+             -H:Name=./builds/indexer
+
+echo "Sucess! Good to run ./builds/indexer"
