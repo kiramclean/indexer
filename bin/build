@@ -9,7 +9,8 @@ echo "Nativize it..."
 native-image --report-unsupported-elements-at-runtime \
              --initialize-at-build-time \
              --no-server \
+             --no-fallback \
              -jar ./builds/indexer.jar \
              -H:Name=./builds/indexer
 
-echo "Sucess! Good to run ./builds/indexer"
+echo "Success! Good to run ./builds/indexer"
