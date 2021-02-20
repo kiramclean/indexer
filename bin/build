@@ -1,8 +1,10 @@
 #!/bin/bash
 
+set -eo
+
 echo "Build jar..."
 
-clj -X:uberjar
+clj -X:native:uberjar
 
 echo "Nativize it..."
 
