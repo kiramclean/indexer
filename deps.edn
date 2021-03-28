@@ -1,18 +1,35 @@
 {:paths ["src" "resources"]
+
  :deps {org.clojure/clojure {:mvn/version "1.10.2"}
-        babashka/fs {:mvn/version "0.0.1"}
-        org.clojure/tools.cli {:mvn/version "1.0.194"}}
+        babashka/fs {:git/url "https://github.com/babashka/fs"
+                     :sha "f4e614b3c9067bcff29deb6bd7dcc0d2a02383d7"}
+        org.clojure/tools.cli {:mvn/version "1.0.194"}
+        frontmatter/frontmatter {:mvn/version "0.0.1"}
+        datalevin/datalevin {:mvn/version "0.4.20"}}
+
  :aliases
- {:run-m {:main-opts ["-m" "indexer.core"]}
+ {:dev {:extra-deps {org.clojure/tools.deps.alpha
+                     {:git/url "https://github.com/clojure/tools.deps.alpha"
+                      :sha     "d77476f3d5f624249462e275ae62d26da89f320b"
+                      ;; Using latest commit on the add-lib3 branch
+                      ;; do not use :project/outdated to update
+                      }
+                     vvvvalvalval/scope-capture-nrepl {:mvn/version "0.3.1"}}}
+
+  :run-m {:main-opts ["-m" "indexer.core"]}
+
   :run-x {:ns-default indexer.core
           :exec-fn build-index}
+
   :test {:extra-paths ["test"]
          :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}}
+
   :runner {:extra-deps {com.cognitect/test-runner
                         {:git/url "https://github.com/cognitect-labs/test-runner"
                          :sha "b6b3193fcc42659d7e46ecd1884a228993441182"}}
            :main-opts ["-m" "cognitect.test-runner"
                        "-d" "test"]}
+
   :uberjar {:replace-deps {seancorfield/depstar {:mvn/version "2.0.171"}}
             :exec-fn hf.depstar/uberjar
             :exec-args {:aot true
@@ -20,5 +37,6 @@
                         :main-class "indexer.core"
                         :sync-pom true
                         :aliases [:native]}}
+
   :native {:jvm-opts ["-Dclojure.compiler.direct-linking=true"
                       "-Dclojure.spec.skip-macros=true"]}}}

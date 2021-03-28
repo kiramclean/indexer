@@ -3,26 +3,22 @@
   (:require
    [babashka.fs :as fs]
    [clojure.java.io :as io]
+   [clojure.string :as str]
    [clojure.tools.cli :refer [parse-opts]]
-   [clojure.string :as str]))
-
-(defn- build-index
-  "Index the contents of input-dir into a file-based database"
-  [{:keys [input output]}]
-  (println "INPUT DIR::: " input)
-  (println "OUTPUT NAME::: " output))
+   [indexer.db :as db]))
 
 (def cli-options
-  [["-i" "--input INPUT" "Input directory (source of files to index)"
+  [["-i" "--input" "Input directory (source of files to index)"
     :default (fs/absolutize (io/file ""))
     :parse-fn #(fs/absolutize (io/file %))
-    :validate [fs/exists? "Directory must exist"]]
-   ["-o" "--output OUTPUT" "Output name (for generated database)"
-    :default "db"
-    :parse-fn str
+    :validate [#(and (fs/exists? %) (fs/directory? %)) "Directory must exist"]]
+   ["-o" "--output" "Output name (for generated database)"
+    :default (fs/absolutize "db")
+    :parse-fn #(fs/absolutize (io/file %))
     :validate [(complement fs/exists?) "Database already exists"]]
-   ["-h" "--help"]
-   ["-?" "--?"]])
+   ["-h" "--help" "Show this help screen"]
+   ["-?" nil "Show this help screen"
+    :id :help]])
 
 (defn usage [options-summary]
   (->> ["Indexer is a a utility to index the contents of your directory into a file-based database"
@@ -35,6 +31,7 @@
         "  " options-summary
         ""
         "Actions:"
+        "  help     Show this help screen"
         "  build    Indexes the content of the given input directory in a database stored as a file with the given output name"
         ]
        (str/join \newline)))
@@ -58,7 +55,7 @@
 
       ;; custom validation on arguments
       (and (= 1 (count arguments))
-           (#{"build help"} (first arguments)))
+           (#{"build" "help"} (first arguments)))
       {:action (first arguments) :options options :summary summary}
 
       :else ; failed custom validation => exit with usage summary
@@ -74,4 +71,7 @@
       (exit (if ok? 0 1) exit-message)
       (case action
         "help" (usage summary)
-        "build"  (build-index options)))))
+        "build" (db/build! options)))))
+
+(comment
+  (require '[clojure.tools.deps.alpha.repl :refer [add-libs]]))
