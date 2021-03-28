@@ -1,8 +1,7 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.10.2"}
         babashka/fs {:mvn/version "0.0.1"}
-        expound/expound {:mvn/version "0.8.9"}
-        cli-matic/cli-matic {:mvn/version "0.4.3"}}
+        org.clojure/tools.cli {:mvn/version "1.0.194"}}
  :aliases
  {:run-m {:main-opts ["-m" "indexer.core"]}
   :run-x {:ns-default indexer.core
